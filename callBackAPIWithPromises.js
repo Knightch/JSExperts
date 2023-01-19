@@ -36,8 +36,6 @@ function flex(url) {
 
 }
 
-
-
 flex(`${BASE_URL}user`)
     .then((res) => {
         const parsedResponse = JSON.parse(res)
@@ -45,12 +43,17 @@ flex(`${BASE_URL}user`)
         const userId = parsedResponse.data[0].id
         console.log('first user Id ', userId)
 
-        flex(`${BASE_URL}user/${userId}`)
-            .then((res) => {
-                const parsedResponse = JSON.parse(res)
-                console.log('userProfile: ', parsedResponse)
-            })
+        return flex(`${BASE_URL}user/${userId}`)
+    })
+    .then((res) => {
+        const parsedResponse = JSON.parse(res)
+        console.log('userProfile: ', parsedResponse)
     })
     .catch((err) => {
         console.log(err)
     })
+    .finally(()=>{
+        console.log('all done, moving on.....')
+    });
+
+console.log('promise has been invoked, moving on....')
