@@ -36,24 +36,34 @@ function flex(url) {
 
 }
 
-flex(`${BASE_URL}user`)
-    .then((res) => {
-        const parsedResponse = JSON.parse(res)
-        console.log('users: ', parsedResponse)
-        const userId = parsedResponse.data[0].id
-        console.log('first user Id ', userId)
 
-        return flex(`${BASE_URL}user/${userId}`)
+async function getFirstUserDetails() {
+    const response = await flex(`${BASE_URL}user`);
+    const parsedResponse = JSON.parse(response)
+    const userId = parsedResponse.data[0].id
+    const userProfileResponse = await flex(`${BASE_URL}user/${userId}`)
+    console.log(JSON.parse(userProfileResponse))
+}
+
+async function getFirstFiveUserDetails() {
+    const response = await flex(`${BASE_URL}user`);
+    const parsedResponse = JSON.parse(response)
+
+    //promise.all
+    const userProfileRequests = [];
+    for (let i = 0; i < 5; i++) {
+        const userId = parsedResponse.data[i].id
+        userProfileRequests.push(flex(`${BASE_URL}user/${userId}`))
+    }
+
+    Promise.all(userProfileRequests)
+    .then((userResponse)=>{
+        console.log(userResponse)
     })
-    .then((res) => {
-        const parsedResponse = JSON.parse(res)
-        console.log('userProfile: ', parsedResponse)
-    })
-    .catch((err) => {
+    .catch((err)=>{
         console.log(err)
     })
-    .finally(()=>{
-        console.log('all done, moving on.....')
-    });
+}
 
-console.log('promise has been invoked, moving on....')
+// getFirstUserDetails()
+getFirstFiveUserDetails()
